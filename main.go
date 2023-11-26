@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/joho/godotenv"
@@ -21,7 +22,6 @@ type RequestMessage struct {
 }
 
 func sendRequestWithJSON(url, currency string) ([]byte, error) {
-	fmt.Println("iteration")
 	response, err := http.Get(url)
 	bodyBytes, err := io.ReadAll(response.Body)
 	if err != nil {
@@ -46,8 +46,8 @@ func sendRequestWithJSON(url, currency string) ([]byte, error) {
 		message.Error = ""
 		message.Response = json.RawMessage(responseBody)
 	}
-	jsonMessage, err := json.Marshal(message)
 
+	jsonMessage, err := json.Marshal(message)
 	if err != nil {
 		log.Fatalf(err.Error())
 	}
@@ -77,7 +77,7 @@ func saveJSONToFile(filename string, jsonData []byte) error {
 	}(file)
 
 	// Convert the JSON data to bytes
-	dataBytes := append(jsonData, '\n')
+	dataBytes := append(bytes.Replace(jsonData, []byte("\\u0026"), []byte("&"), -1), '\n')
 
 	// Append the data to the file
 	_, err = file.Write(dataBytes)

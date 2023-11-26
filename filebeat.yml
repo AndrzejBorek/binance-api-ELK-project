@@ -2,7 +2,10 @@ filebeat.inputs:
   - type: filestream
     id: default-filestream
     paths:
-      - filebeat_ingest_data/*.log
+      - /usr/share/filebeat/logs/*.log
+
+setup.template.name: "filebeat"
+setup.template.pattern: "filebeat-*"
 
 
 filebeat.autodiscover:
@@ -28,7 +31,5 @@ output.elasticsearch:
   password: ${ELASTIC_PASSWORD}
   ssl.enabled: true
   ssl.certificate_authorities: "/usr/share/filebeat/certs/ca/ca.crt"
-  ssl:
-    certificate: "/usr/share/filebeat/certs/es01/es01.crt"
-    certificate_authorities: "/usr/share/filebeat/certs/ca/ca.crt"
-    key: "/usr/share/filebeat/certs/es01/es01.key"
+  ssl.certificate: "/usr/share/filebeat/certs/es01/es01.crt"
+  ssl.key: "/usr/share/filebeat/certs/es01/es01.key"
