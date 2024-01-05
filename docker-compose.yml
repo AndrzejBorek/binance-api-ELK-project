@@ -26,6 +26,8 @@ volumes:
   logstashdata01:
     name: logstashdata01
     driver: local
+  goapp-logs:
+    driver: local
 
 services:
   setup:
@@ -193,7 +195,7 @@ services:
     volumes:
       - certs:/usr/share/filebeat/certs
       - filebeatdata01:/usr/share/filebeat/data
-      - "./filebeat_ingest_data/:/usr/share/filebeat/logs/"
+      - goapp-logs:/usr/share/filebeat/logs
       - "./filebeat.yml:/usr/share/filebeat/filebeat.yml:ro"
       - "/var/lib/docker/containers:/var/lib/docker/containers:ro"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
@@ -223,3 +225,21 @@ services:
       - ELASTIC_USER=elastic
       - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
       - ELASTIC_HOSTS=https://es01:9200
+  golang-app:
+    depends_on:
+      es01:
+        condition: service_healthy
+      kibana:
+        condition: service_healthy
+    image: golang:1.19
+    labels:
+      - app
+    user: root
+    volumes:
+      - goapp-logs:/usr/share/filebeat/logs/
+      - ./main.go:/app/main.go
+      - ./go.mod:/app/go.mod
+      - .env:/environment/.env
+    working_dir: /app
+    entrypoint: /bin/sh
+    command: [ "-c", "go mod tidy && go run main.go" ]

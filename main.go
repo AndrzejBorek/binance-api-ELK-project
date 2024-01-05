@@ -95,7 +95,7 @@ func main() {
 	currency := "BTCUSDT"
 
 	// Klucze API Binance
-	err := godotenv.Load(".env")
+	err := godotenv.Load("/environment/.env")
 	if err != nil {
 		log.Fatalf("Error loading .env file: %s", err)
 	}
@@ -106,7 +106,7 @@ func main() {
 		if err != nil {
 			log.Printf("Error sending request: %s", err)
 		} else {
-			err := saveJSONToFile("./filebeat_ingest_data/logdata.log", jsonData)
+			err := saveJSONToFile("/usr/share/filebeat/logs/logdata.log", jsonData)
 			if err != nil {
 				log.Printf("Error saving JSON to file: %s", err)
 			}
